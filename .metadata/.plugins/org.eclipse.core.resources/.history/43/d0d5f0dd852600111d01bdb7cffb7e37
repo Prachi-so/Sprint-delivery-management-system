@@ -1,0 +1,13 @@
+package com.lpu.auth_service.dto;
+
+import com.lpu.auth_service.entity.Address;
+
+public class DeliveryRequestDto {
+
+	private double weight;
+    private String type;
+
+    private Address senderAddress;
+    private Address receiverAddress;
+
+}

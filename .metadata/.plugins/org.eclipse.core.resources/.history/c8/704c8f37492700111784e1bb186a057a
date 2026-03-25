@@ -1,0 +1,5 @@
+package com.lpu.admin_service.exceptions;
+
+public class CustomException {
+
+}

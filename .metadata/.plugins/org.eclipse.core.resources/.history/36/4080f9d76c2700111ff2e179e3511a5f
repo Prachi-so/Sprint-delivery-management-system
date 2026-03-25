@@ -1,0 +1,4 @@
+spring.application.name=Admin-service
+
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/registry/eureka
+server.port=8084

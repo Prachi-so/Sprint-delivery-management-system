@@ -1,0 +1,121 @@
+package com.lpu.auth_service.service;
+
+import java.util.List;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.lpu.auth_service.dto.DeliveryRequestDto;
+import com.lpu.auth_service.dto.TrackingEventDto;
+import com.lpu.auth_service.entity.Delivery;
+import com.lpu.auth_service.entity.DeliveryStatus;
+import com.lpu.auth_service.entity.Parcel;
+import com.lpu.auth_service.repository.DeliveryRepository;
+
+@Service
+public class DeliveryService {
+	private final DeliveryRepository repo ;
+
+	
+public DeliveryService(DeliveryRepository repo) {
+		super();
+		this.repo = repo;
+	}
+
+
+
+     
+    public Delivery createDelivery(DeliveryRequestDto req, String userId) {
+
+       
+        Parcel pkg=new Parcel();
+        pkg.setWeight(req.getWeight());
+        pkg.setType(req.getType());
+
+        Delivery d = new Delivery();
+        d.setUserId(userId);
+        d.setStatus(DeliveryStatus.BOOKED);
+        d.setPrice(calculatePrice(req));
+
+        d.setPkg(pkg);
+        d.setSenderAddress(req.getSenderAddress());
+        d.setReceiverAddress(req.getReceiverAddress());
+
+        Delivery saved = repo.save(d);
+
+      
+
+        return saved;
+    }
+
+   
+    public List<Delivery> getUserDeliveries(String userId) {
+        return repo.findByUserId(userId);
+    }
+
+    /*
+    //UPDATING STATUS
+    public Delivery updateStatus(Long deliveryId, DeliveryStatus newStatus) {
+
+        Delivery d = repo.findById(deliveryId)
+                .orElseThrow(() -> new RuntimeException("Delivery not found"));
+
+        
+        validateTransition(d.getStatus(), newStatus);
+
+        d.setStatus(newStatus);
+
+        return repo.save(d);
+    }
+*/
+    private double calculatePrice(DeliveryRequestDto req) {
+        return req.getWeight() * 10;
+    }
+    
+    
+    @Autowired
+    private EventProducer producer;
+
+    public Delivery updateStatus(Long id, DeliveryStatus status) {
+
+        Delivery delivery = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found"));
+
+        delivery.setStatus(status);
+        Delivery updated = repo.save(delivery);
+
+        //sending event
+        TrackingEventDto event = new TrackingEventDto();
+        event.setDeliveryId(updated.getId());
+        event.setUserId(updated.getUserId());
+        event.setStatus(status.name());
+        event.setLocation("System");
+        event.setDescription("Status updated to " + status.name());
+
+        producer.sendEvent(event);
+
+        return updated;
+    }
+
+    private void validateTransition(DeliveryStatus current, DeliveryStatus next) {
+
+        if (current == DeliveryStatus.BOOKED && next != DeliveryStatus.PICKED_UP)
+            throw new RuntimeException("Invalid transition");
+
+        if (current == DeliveryStatus.PICKED_UP && next != DeliveryStatus.IN_TRANSIT)
+            throw new RuntimeException("Invalid transition");
+
+        if (current == DeliveryStatus.IN_TRANSIT && next != DeliveryStatus.OUT_FOR_DELIVERY)
+            throw new RuntimeException("Invalid transition");
+
+        if (current == DeliveryStatus.OUT_FOR_DELIVERY && next != DeliveryStatus.DELIVERED)
+            throw new RuntimeException("Invalid transition");
+    }
+    
+    public List<Delivery> getAllDeliveries() {
+        return repo.findAll();
+    }
+    
+
+}

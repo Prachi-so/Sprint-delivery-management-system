@@ -1,0 +1,14 @@
+spring.application.name=Tracking-service
+server.port=8083
+
+spring.datasource.url= jdbc:postgresql://localhost:5432/TrackingServiceDatabase
+spring.datasource.username=postgres
+spring.datasource.password=root
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.show-sql=true
+
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/registry/eureka

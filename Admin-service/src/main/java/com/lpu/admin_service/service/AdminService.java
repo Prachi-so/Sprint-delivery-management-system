@@ -1,0 +1,86 @@
+package com.lpu.admin_service.service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.lpu.admin_service.dto.DashboardResponse;
+import com.lpu.admin_service.dto.DeliveryDto;
+import com.lpu.admin_service.dto.ReportResponse;
+import com.lpu.admin_service.feign.DeliveryClient;
+
+@Service
+public class AdminService {
+
+	@Autowired
+    private DeliveryClient deliveryClient;
+
+    //DASHBOARD
+    public DashboardResponse getDashboard() {
+
+        List<DeliveryDto> deliveries = deliveryClient.getAllDeliveries("ADMIN");
+
+        DashboardResponse res = new DashboardResponse();
+
+        res.setTotalDeliveries(deliveries.size());
+
+        res.setDelivered(
+                deliveries.stream()
+                        .filter(d -> "DELIVERED".equals(d.getStatus()))
+                        .count()
+        );
+
+        res.setInTransit(
+                deliveries.stream()
+                        .filter(d -> "IN_TRANSIT".equals(d.getStatus()))
+                        .count()
+        );
+
+        res.setFailed(
+                deliveries.stream()
+                        .filter(d -> "FAILED".equals(d.getStatus()))
+                        .count()
+        );
+        
+    
+
+        return res;
+    }
+
+    // STATUS REPORT
+    public List<ReportResponse> getStatusReport() {
+
+        List<DeliveryDto> deliveries = deliveryClient.getAllDeliveries("ADMIN");
+
+        Map<String, Long> map = deliveries.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryDto::getStatus,
+                        Collectors.counting()
+                ));
+
+        return map.entrySet()
+                .stream()
+                .map(e -> new ReportResponse(e.getKey(), e.getValue()))
+                .toList();
+    }
+
+    // DAILY REPORT
+    public List<ReportResponse> getDailyReport() {
+
+        List<DeliveryDto> deliveries = deliveryClient.getAllDeliveries("ADMIN");
+
+        Map<String, Long> map = deliveries.stream()
+                .collect(Collectors.groupingBy(
+                        DeliveryDto::getCreatedDate,
+                        Collectors.counting()
+                ));
+
+        return map.entrySet()
+                .stream()
+                .map(e -> new ReportResponse(e.getKey(), e.getValue()))
+                .toList();
+    }
+}

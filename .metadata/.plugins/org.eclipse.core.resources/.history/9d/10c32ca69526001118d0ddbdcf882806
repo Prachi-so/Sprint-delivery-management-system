@@ -1,0 +1,12 @@
+spring.application.name=api-gateway
+server.port=8888
+
+#default zone
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/registry/eureka
+
+#enable dynamic routing
+spring.cloud.gateway.discovery.locator.enabled=true
+spring.cloud.gateway.server.webflux.discovery.locator.enabled=true
+
+#to convert URL to lowercase
+spring.cloud.gateway.discovery.locator.lower-case-service-id=true

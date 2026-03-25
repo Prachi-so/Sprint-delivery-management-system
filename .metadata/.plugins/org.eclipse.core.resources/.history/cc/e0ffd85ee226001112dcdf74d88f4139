@@ -1,0 +1,24 @@
+package com.example.demo.entity;
+
+import java.time.LocalDateTime;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+public class DeliveryProof {
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long deliveryId;
+
+    private String userId;
+
+    private String proofType;
+
+    private String proofValue;
+
+    private LocalDateTime timestamp;
+}

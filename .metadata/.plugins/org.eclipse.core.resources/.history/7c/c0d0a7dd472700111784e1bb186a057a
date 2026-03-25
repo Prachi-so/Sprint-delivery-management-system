@@ -1,0 +1,26 @@
+package com.lpu.admin_service.dto;
+
+public class ReportResponse {
+
+	private String date;
+    private long totalDeliveries;
+	public ReportResponse(String date, long totalDeliveries) {
+		super();
+		this.date = date;
+		this.totalDeliveries = totalDeliveries;
+	}
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+	public long getTotalDeliveries() {
+		return totalDeliveries;
+	}
+	public void setTotalDeliveries(long totalDeliveries) {
+		this.totalDeliveries = totalDeliveries;
+	}
+    
+    
+}
