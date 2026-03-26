@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.lpu.admin_service.dto.DashboardResponse;
@@ -19,47 +20,50 @@ public class AdminService {
     private DeliveryClient deliveryClient;
 
     //DASHBOARD
+	@Cacheable(value = "dashboard")
     public DashboardResponse getDashboard() {
 
-        List<DeliveryDto> deliveries = deliveryClient.getAllDeliveries("ADMIN");
+		List<DeliveryDto> deliveries = deliveryClient.getAllForAdmin();
 
-        DashboardResponse res = new DashboardResponse();
+	    long total = deliveries.size();
 
-        res.setTotalDeliveries(deliveries.size());
+	    long delivered = deliveries.stream()
+	            .filter(d -> "DELIVERED".equalsIgnoreCase(d.getStatus()))
+	            .count();
 
-        res.setDelivered(
-                deliveries.stream()
-                        .filter(d -> "DELIVERED".equals(d.getStatus()))
-                        .count()
-        );
+	    long inTransit = deliveries.stream()
+	            .filter(d -> "OUT_FOR_DELIVERY".equalsIgnoreCase(d.getStatus()))
+	            .count();
 
-        res.setInTransit(
-                deliveries.stream()
-                        .filter(d -> "IN_TRANSIT".equals(d.getStatus()))
-                        .count()
-        );
+	    long failed = deliveries.stream()
+	            .filter(d -> "FAILED".equalsIgnoreCase(d.getStatus()))
+	            .count();
 
-        res.setFailed(
-                deliveries.stream()
-                        .filter(d -> "FAILED".equals(d.getStatus()))
-                        .count()
-        );
-        
-    
+	    DashboardResponse response = new DashboardResponse();
+	    response.setTotalDeliveries(total);
+	    response.setDelivered(delivered);
+	    response.setInTransit(inTransit);
+	    response.setFailed(failed);
 
-        return res;
+	    return response;
     }
 
     // STATUS REPORT
     public List<ReportResponse> getStatusReport() {
 
-        List<DeliveryDto> deliveries = deliveryClient.getAllDeliveries("ADMIN");
+        List<DeliveryDto> deliveries = deliveryClient.getAllForAdmin();
 
+//        Map<String, Long> map = deliveries.stream()
+//                .collect(Collectors.groupingBy(
+//                        DeliveryDto::getStatus,
+//                        Collectors.counting()
+//                ));
+        
         Map<String, Long> map = deliveries.stream()
-                .collect(Collectors.groupingBy(
-                        DeliveryDto::getStatus,
-                        Collectors.counting()
-                ));
+        	    .collect(Collectors.groupingBy(
+        	        d -> d.getStatus() != null ? d.getStatus() : "UNKNOWN",
+        	        Collectors.counting()
+        	    ));
 
         return map.entrySet()
                 .stream()
@@ -70,13 +74,19 @@ public class AdminService {
     // DAILY REPORT
     public List<ReportResponse> getDailyReport() {
 
-        List<DeliveryDto> deliveries = deliveryClient.getAllDeliveries("ADMIN");
+        List<DeliveryDto> deliveries = deliveryClient.getAllForAdmin();
 
+//        Map<String, Long> map = deliveries.stream()
+//                .collect(Collectors.groupingBy(
+//                        DeliveryDto::getCreatedDate,
+//                        Collectors.counting()
+//                ));
+        
         Map<String, Long> map = deliveries.stream()
-                .collect(Collectors.groupingBy(
-                        DeliveryDto::getCreatedDate,
-                        Collectors.counting()
-                ));
+        	    .collect(Collectors.groupingBy(
+        	        d -> d.getStatus() != null ? d.getStatus() : "UNKNOWN",
+        	        Collectors.counting()
+        	    ));
 
         return map.entrySet()
                 .stream()

@@ -17,16 +17,24 @@ import com.lpu.auth_service.repository.DeliveryRepository;
 public class DeliveryService {
 	private final DeliveryRepository repo ;
 
+	  //  @Autowired
+    private final EventProducer producer;
+    
+    
 	
-public DeliveryService(DeliveryRepository repo) {
-		super();
-		this.repo = repo;
-	}
+
 
 
 
      
-    public Delivery createDelivery(DeliveryRequestDto req, String userId) {
+    public DeliveryService(DeliveryRepository repo, EventProducer producer) {
+		super();
+		this.repo = repo;
+		this.producer = producer;
+	}
+
+
+	public Delivery createDelivery(DeliveryRequestDto req, String userId) {
 
        
         Parcel pkg=new Parcel();
@@ -74,8 +82,7 @@ public DeliveryService(DeliveryRepository repo) {
     }
     
     
-    @Autowired
-    private EventProducer producer;
+
 
     public Delivery updateStatus(Long id, DeliveryStatus status, String location) {
 

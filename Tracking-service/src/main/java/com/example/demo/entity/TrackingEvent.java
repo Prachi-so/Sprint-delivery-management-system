@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -8,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class TrackingEvent {
+public class TrackingEvent implements Serializable{
 
 	    @Id
 	    @GeneratedValue(strategy=GenerationType.IDENTITY)

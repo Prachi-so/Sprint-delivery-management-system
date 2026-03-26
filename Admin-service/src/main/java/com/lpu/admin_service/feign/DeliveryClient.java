@@ -12,5 +12,5 @@ import com.lpu.admin_service.dto.DeliveryDto;
 public interface DeliveryClient {
 
 	  @GetMapping("/delivery/admin/all")
-	   List<DeliveryDto> getAllDeliveries(@RequestHeader("X-Role") String role);
+	   List<DeliveryDto> getAllForAdmin( );
 }

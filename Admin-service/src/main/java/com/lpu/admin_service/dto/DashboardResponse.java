@@ -1,6 +1,8 @@
 package com.lpu.admin_service.dto;
 
-public class DashboardResponse {
+import java.io.Serializable;
+
+public class DashboardResponse implements Serializable{
 
 	 private long totalDeliveries;
 	 private long delivered;

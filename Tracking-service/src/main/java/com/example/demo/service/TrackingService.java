@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.DeliveryProof;
@@ -13,7 +14,7 @@ import com.example.demo.repository.DeliveryProofRepository;
 import com.example.demo.repository.DocumentRepository;
 import com.example.demo.repository.TrackingRepository;
 
-import jakarta.persistence.Cacheable;
+
 
 @Service
 public class TrackingService {
@@ -33,7 +34,7 @@ public class TrackingService {
 	        return trackingRepo.save(event);
 	    }
 
-	  
+	    @Cacheable(value = "tracking", key = "#deliveryId")
 	    public List<TrackingEvent> getEvents(Long deliveryId) {
 	        return trackingRepo.findByDeliveryId(deliveryId);
 	    }

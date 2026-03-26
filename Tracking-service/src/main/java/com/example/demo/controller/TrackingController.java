@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,13 +53,14 @@ public class TrackingController {
     }
     */
 
-    
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/events/{deliveryId}")
     public List<TrackingEvent> getEvents(@PathVariable Long deliveryId) {
         return service.getEvents(deliveryId);
     }
 
     // UPLOAD DOCUMENT
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/document/upload")
     public Document uploadDocument( @RequestParam MultipartFile file, @RequestParam Long deliveryId,
             @RequestParam String userId,
@@ -77,6 +79,7 @@ public class TrackingController {
     }
 
     // GET DOCUMENT
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/document/{id}")
     public ResponseEntity<Resource> getDocument(@PathVariable Long id) {
 
@@ -98,6 +101,7 @@ public class TrackingController {
     }
 
     // UPLOAD PROOF
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/proof/upload")
     public DeliveryProof uploadProof(
             @RequestParam MultipartFile file,
@@ -117,6 +121,7 @@ public class TrackingController {
     }
 
     //  VIEW IMAGE
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/proof/{id}")
     public ResponseEntity<Resource> getProof(@PathVariable Long id) {
 

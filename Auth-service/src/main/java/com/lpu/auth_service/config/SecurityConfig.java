@@ -34,12 +34,15 @@ public class SecurityConfig {
 
 				// authorization rules
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/auth/login", "/auth/register").permitAll()
+						auth -> auth.requestMatchers("/auth/login", "/auth/register", "/v3/api-docs/**",
+				                "/swagger-ui/**",
+				                "/swagger-ui.html").permitAll()
 						.requestMatchers("/auth/profile").hasRole("ADMIN")
 					 //   .requestMatchers("/update/**").hasRole("USER")
+						
 						.anyRequest().authenticated())
 
-				// add JWT filter
+				// add JWT filters
 				// Run my JwtFilter BEFORE the default UsernamePasswordAuthenticationFilter
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

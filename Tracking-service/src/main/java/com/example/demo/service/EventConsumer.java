@@ -17,8 +17,8 @@ public class EventConsumer {
 	@Autowired
     private TrackingRepository repo;
 	
-//	@Autowired
-//	private CacheManager cacheManager;
+	@Autowired
+	private CacheManager cacheManager;
 
     @RabbitListener(queues = RabbitConfig.QUEUE)
     public void receiveEvent(TrackingEvent event) {
@@ -28,7 +28,7 @@ public class EventConsumer {
 
         repo.save(event);
         
-//        cacheManager.getCache("tracking")
-//        .evict(event.getDeliveryId());
+        cacheManager.getCache("tracking")
+        .evict(event.getDeliveryId());
     }
 }

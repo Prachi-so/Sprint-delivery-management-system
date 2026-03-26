@@ -1,0 +1,52 @@
+package com.lpu.auth_service.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.lpu.auth_service.dto.DeliveryRequestDto;
+import com.lpu.auth_service.entity.Delivery;
+import com.lpu.auth_service.entity.DeliveryStatus;
+import com.lpu.auth_service.service.DeliveryService;
+
+@RestController
+@RequestMapping("/delivery")
+public class DeliveryController {
+
+	 private final DeliveryService service;
+
+	    public DeliveryController(DeliveryService service) {
+	        this.service = service;
+	    }
+
+	    // ✅ /delivery-request
+	    @PostMapping("/request")
+	    public Delivery create(@RequestBody DeliveryRequestDto req,
+	                           @RequestHeader("X-User-Id") long userId) {
+
+	        return service.createDelivery(req, userId);
+	    }
+
+	    // ✅ GET MY DELIVERIES
+	    @GetMapping("/my")
+	    public List<Delivery> getMy(@RequestHeader("X-User-Id") long userId) {
+	        return service.getUserDeliveries(userId);
+	    }
+
+	    // ✅ /delivery-status
+	    @PutMapping("/status/{id}")
+	    public Delivery update(@PathVariable long id,
+	                           @RequestParam DeliveryStatus status) {
+
+	        return service.updateStatus(id, status);
+	    }
+	
+}

@@ -77,12 +77,7 @@ public class UserController {
                     .body("Invalid credentials");
         }
     }
-    // send jwt token in header
-    @GetMapping("/profile/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String test(@PathVariable long id) {
-        return "Access Granted ";
-    }
+  
     
    
 }

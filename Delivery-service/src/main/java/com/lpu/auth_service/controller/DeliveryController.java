@@ -2,6 +2,7 @@ package com.lpu.auth_service.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class DeliveryController {
 	    }
 
 	    //creating delivery request
+	    @PreAuthorize("hasRole('ROLE_USER')")
 	    @PostMapping("/request")
 	    public Delivery create(@RequestBody DeliveryRequestDto req, @RequestHeader("X-User-Id") String userId) {
 
@@ -37,6 +39,7 @@ public class DeliveryController {
 	   
 	    //fetching deliveries
 	    @GetMapping("/my")
+	    @PreAuthorize("hasRole('ROLE_USER')")
 	    public List<Delivery> getMy(@RequestHeader("X-User-Id") String userId) {
 	        return service.getUserDeliveries(userId);
 	    }
@@ -44,17 +47,21 @@ public class DeliveryController {
 	   
 	    //updating status
 	    @PutMapping("/status/{id}")
+	   // @PreAuthorize("hasRole('ROLE_ADMIN')")
 	    public Delivery updateStatus(@PathVariable Long id, @RequestParam DeliveryStatus status, @RequestParam String location) {
 
-	        return service.updateStatus(id, status,location);
+	        return service.updateStatus(id, status, location);
 	    }
 	    
+	    
 	    @GetMapping("/admin/all")
-	    public List<Delivery> getAllForAdmin(@RequestHeader("X-Role") String role) {
-
-	        if (!"ADMIN".equals(role)) {
-	            throw new RuntimeException("Access Denied");
-	        }
+	   // @PreAuthorize("hasRole('ROLE_ADMIN')")
+	    public List<Delivery> getAllForAdmin(  
+	    		) {
+//
+//	        if (!"ADMIN".equals(role)) {
+//	            throw new RuntimeException("Access Denied");
+//	        }
 
 	        return service.getAllDeliveries();
 	    }

@@ -1,5 +1,8 @@
 package com.lpu.admin_service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeliveryDto {
 
 	private Long id;
